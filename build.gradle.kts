@@ -1,21 +1,48 @@
 plugins {
     kotlin("jvm") version "2.0.0"
+    application
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("com.diffplug.spotless") version "6.25.0"
+    id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
-group = "org.example"
-version = "1.0-SNAPSHOT"
+group = "tools.aqua"
+
+version = "0.5"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
+
+var starsVersion = "0.5"
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation(group = "tools.aqua", name = "stars-core", version = starsVersion)
+    implementation(group = "tools.aqua", name = "stars-logic-kcmftbl", version = starsVersion)
+    implementation(group = "tools.aqua", name = "stars-data-av", version = starsVersion)
+    implementation(group = "tools.aqua", name = "stars-importer-carla", version = starsVersion)
+    implementation(group = "com.github.ajalt.clikt", name = "clikt", version = "4.4.0")
+    implementation("com.google.code.gson:gson:2.8.9")
+
+    // GUI Dependencies:
+    implementation("org.openjfx:javafx-controls:17.0.0.1:win")
+    implementation("org.openjfx:javafx-graphics:17.0.0.1:win")
+    implementation("org.openjfx:javafx-fxml:17.0.0.1:win")
+    implementation("no.tornado:tornadofx:1.7.20")  // Optional: Für TornadoFX
+
+    implementation("com.github.vlsi.mxgraph:jgraphx:4.2.2")
+
+    implementation("guru.nidi:graphviz-java:0.18.1")
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+
+// application { mainClass.set("tools.aqua.stars.carla.experiments.Experiment") }
+
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17)
 }
