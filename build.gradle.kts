@@ -41,7 +41,7 @@ tasks.test {
     useJUnitPlatform()
 }
 
-// application { mainClass.set("tools.aqua.stars.carla.experiments.Experiment") }
+application { mainClass.set("tools.aqua.stars.carla.experiments.gui.MainKt") }
 
 kotlin {
     jvmToolchain(17)

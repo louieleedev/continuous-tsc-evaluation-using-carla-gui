@@ -1,13 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
+        <compositeConfiguration>
+          <compositeBuild compositeDefinitionSource="SCRIPT">
+            <builds>
+              <build path="$PROJECT_DIR$/../stars" name="stars">
+                <projects>
+                  <project path="$PROJECT_DIR$/../stars" />
+                  <project path="$PROJECT_DIR$/../stars/stars-core" />
+                  <project path="$PROJECT_DIR$/../stars/stars-data-av" />
+                  <project path="$PROJECT_DIR$/../stars/stars-importer-carla" />
+                  <project path="$PROJECT_DIR$/../stars/stars-logic-kcmftbl" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../stars/buildSrc" name="buildSrc">
+                <projects>
+                  <project path="$PROJECT_DIR$/../stars/buildSrc" />
+                </projects>
+              </build>
+              <build path="$PROJECT_DIR$/../stars-carla-experiments" name="stars-carla-experiments">
+                <projects>
+                  <project path="$PROJECT_DIR$/../stars-carla-experiments" />
+                </projects>
+              </build>
+            </builds>
+          </compositeBuild>
+        </compositeConfiguration>
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleHome" value="" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../stars" />
+            <option value="$PROJECT_DIR$/../stars-carla-experiments" />
+            <option value="$PROJECT_DIR$/../stars/buildSrc" />
+            <option value="$PROJECT_DIR$/../stars/stars-core" />
+            <option value="$PROJECT_DIR$/../stars/stars-data-av" />
+            <option value="$PROJECT_DIR$/../stars/stars-importer-carla" />
+            <option value="$PROJECT_DIR$/../stars/stars-logic-kcmftbl" />
           </set>
         </option>
       </GradleProjectSettings>
