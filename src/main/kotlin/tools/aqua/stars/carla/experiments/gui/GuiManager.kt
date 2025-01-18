@@ -1,18 +1,11 @@
 package tools.aqua.stars.carla.experiments.gui
 
-import com.github.ajalt.clikt.parameters.options.default
-import com.github.ajalt.clikt.parameters.options.flag
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.split
-import com.github.ajalt.clikt.parameters.types.int
+import com.mxgraph.model.mxCell
 import com.mxgraph.swing.mxGraphComponent
 import com.mxgraph.view.mxGraph
 import tools.aqua.stars.core.metric.serialization.tsc.SerializableTSCNode
 import tools.aqua.stars.core.metric.serialization.tsc.SerializableTSCOccurrence
 import tools.aqua.stars.core.metric.utils.getJsonContentOfFile
-import tools.aqua.stars.core.tsc.TSC
-import tools.aqua.stars.core.tsc.instance.TSCInstance
-import tools.aqua.stars.core.tsc.instance.TSCInstanceNode
 import java.awt.BorderLayout
 import javax.swing.JComboBox
 import javax.swing.JFrame
@@ -26,6 +19,7 @@ import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.WatchEvent
 import kotlin.math.floor
+import kotlin.system.exitProcess
 
 class GuiManager {
 
@@ -49,6 +43,7 @@ class GuiManager {
     private val defaultTSC = tsc()
     private val tscList = defaultTSC.buildProjections()
 
+    private var updatesCount = 0
 
     private var layer: String = "full TSC"
 
@@ -128,7 +123,7 @@ class GuiManager {
     }
 
     private fun readResultFromJson() {
-        val jsonFile = File(buildPath("full TSC"))
+        val jsonFile = File(buildPath2("full TSC"))
         val result = getJsonContentOfFile(jsonFile)
 
         // Update Frequency if a vertex is detected
@@ -166,6 +161,29 @@ class GuiManager {
         frequencyMap.forEach{ (id, frequency) ->
             graphManager.updatePathToRootIfLeaf(id, frequency)
         }
+        updatesCount++
+        checkAndUpdateSuggestions()
+    }
+
+    private fun checkAndUpdateSuggestions() {
+        if (updatesCount > 20) {
+            val unseenNodes = mutableListOf<String>()
+            val allNodes = graphManager.getGraph().getChildCells(graphManager.getParent(), true, true)
+            for (node in allNodes) {
+                if (node is mxCell && node.isVertex) {
+                    val frequency = graphManager.getFrequencyMap().getOrDefault(node.id, 0)
+                    if (frequency == 0) {
+                        unseenNodes.add(node.value.toString()) // Füge nicht gesehene Knoten hinzu
+                    }
+                }
+            }
+
+            if (unseenNodes.isNotEmpty()) {
+                // Hier können Sie die GUI aktualisieren, um die nicht gesehenen Knoten vorzuschlagen
+                println("Folgende Knoten wurden noch nicht gesehen: $unseenNodes")
+                // Sie könnten beispielsweise einen Dialog oder eine Benachrichtigung in Ihrem GUI anzeigen
+            }
+        }
     }
 
     private fun buildPath(tscIdentifier: String): String {
@@ -181,14 +199,23 @@ class GuiManager {
             val lastDataFolder = sortedDirectories?.firstOrNull()?.name
 
             if (lastDataFolder != null) {
-                val finalResult = Paths.get(resultPath, lastDataFolder, "valid-tsc-instances-per-tsc", "$tscIdentifier.json").toString()
+                var finalResult = Paths.get(resultPath, lastDataFolder, "valid-tsc-instances-per-tsc", "$tscIdentifier.json").toString()
                 val jsonFile = File(finalResult)
 
-                if (jsonFile.exists()) {
-                    println("Datei gefunden: ${jsonFile.path}")
-                } else {
+//                if (jsonFile.exists()) {
+//                    println("Datei gefunden: ${jsonFile.path}")
+//                } else {
+//                    println("Datei nicht gefunden: ${jsonFile.path}")
+//                    println("Warte auf die JSON-Datei")
+//                    sleep(5000)
+//                }
+                while(!jsonFile.exists()) {
                     println("Datei nicht gefunden: ${jsonFile.path}")
+                    println("Versuche nochmal...")
+                    sleep(1000)
+                    finalResult = buildPath(tscIdentifier)
                 }
+                println("Datei gefunden: ${jsonFile.path}")
                 return finalResult
 
             } else {
@@ -199,6 +226,34 @@ class GuiManager {
             println("Das angegebene Verzeichnis existiert nicht oder ist kein Verzeichnis: $resultPath")
         }
         return ""
+    }
+
+    private fun buildPath2(
+        tscIdentifier: String,
+        basePath: String = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"): String
+    {
+        val resultsDir = File(basePath)
+
+        if (!resultsDir.exists() || !resultsDir.isDirectory) {
+            println("Das angegebene Verzeichnis existiert nicht oder ist kein Verzeichnis: $basePath")
+            exitProcess(1)
+        }
+
+        val directories = resultsDir.listFiles { file -> file.isDirectory }?.sortedByDescending { it.lastModified() }
+
+        val dir = directories!!.first()
+        val jsonPath = Paths.get(dir.path, "valid-tsc-instances-per-tsc", "$tscIdentifier.json").toString()
+        val jsonFile = File(jsonPath)
+
+        if (jsonFile.exists()) {
+            println("Datei gefunden: ${jsonFile.path}")
+            return jsonPath
+        } else {
+            println("Datei nicht gefunden in: ${dir.path}")
+        }
+        println("Versuche erneut nach einer kurzen Pause...")
+        sleep(500)
+        return buildPath2(tscIdentifier, basePath) // Rekursive Suche wiederholen
     }
 
     fun watchDirectory(path: Path) {

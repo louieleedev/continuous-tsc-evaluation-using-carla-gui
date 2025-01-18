@@ -4,28 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="Build_gradle: Dependencies Update">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" afterDir="false" />
+    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="TSC in GUI - final (ohne Vorschlag Generierung)">
       <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/JsonHelper.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/predicates.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/tsc.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration3.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Serializer/CustomMapSerializer.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/JsonHelper.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Experiment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Experiment.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration2.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration2.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/metric/utils/ApplicationConstantsHolder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/metric/utils/ApplicationConstantsHolder.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,7 +44,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../stars" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -74,28 +55,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build GUI.executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.MainKt.executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.Mainkt.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Lee/TU-Dortmund/Bachelorarbeit/Code/GUI/src/main/kotlin/tools/aqua/stars/carla/experiments/gui&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.4275862&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build GUI.executor": "Run",
+    "Kotlin.Main.executor": "Run",
+    "Kotlin.MainKt.executor": "Run",
+    "Kotlin.Mainkt.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main-tsc-gui",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Lee/TU-Dortmund/Bachelorarbeit/Code/GUI/src/main/kotlin/tools/aqua/stars/carla/experiments/gui",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.4275862",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Lee\TU-Dortmund\Bachelorarbeit\Code\GUI\src\main\kotlin\tools\aqua\stars\carla\experiments\gui" />
@@ -142,6 +123,9 @@
       <workItem from="1736418575204" duration="7410000" />
       <workItem from="1736429878660" duration="59385000" />
       <workItem from="1736815860626" duration="1662000" />
+      <workItem from="1736818665991" duration="222000" />
+      <workItem from="1736845614904" duration="806000" />
+      <workItem from="1737150202003" duration="1213000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -167,7 +151,15 @@
       <option name="project" value="LOCAL" />
       <updated>1736419613019</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="TSC in GUI - final (ohne Vorschlag Generierung)">
+      <option name="closed" value="true" />
+      <created>1736818754711</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1736818754711</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -177,6 +169,7 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value="initial commit 2" />
     <MESSAGE value="Build_gradle: Dependencies Update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Build_gradle: Dependencies Update" />
+    <MESSAGE value="TSC in GUI - final (ohne Vorschlag Generierung)" />
+    <option name="LAST_COMMIT_MESSAGE" value="TSC in GUI - final (ohne Vorschlag Generierung)" />
   </component>
 </project>
