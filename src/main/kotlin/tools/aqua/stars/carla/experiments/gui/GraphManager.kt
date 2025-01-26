@@ -61,18 +61,6 @@ class GraphManager(private val graph: mxGraph) {
             colorPathToRoot(vertex, color)
             updateVertexLabel(vertexId)
         }
-//        else if (vertex != null) {
-//            val childCount = graph.model.getChildCount(vertex)
-//            var maxVorkommen = 0
-//            for (i in 0 until childCount) {
-//                val count = frequencyMap.getOrDefault(vertex.getChildAt(i).id,0)
-//                if(count > maxVorkommen) {
-//                    maxVorkommen = count
-//                }
-//            }
-//            val color = getColorByFrequency(maxVorkommen)
-//            colorPathToRoot(vertex, color)
-//        }
     }
 
     fun clearGraph() {
@@ -84,8 +72,7 @@ class GraphManager(private val graph: mxGraph) {
             // Wurzel wird nicht entfernt
             val cellsToRemove = cells.filter { it != rootNode }
             graph.removeCells(cellsToRemove.toTypedArray())
-            // frequencyMap.clear()
-            // graph.removeCells(cells)
+
         } finally {
             graph.model.endUpdate()
             graph.refresh()
@@ -93,7 +80,7 @@ class GraphManager(private val graph: mxGraph) {
         }
     }
 
-    private fun findVertexById(id: String): mxCell? {
+    fun findVertexById(id: String): mxCell? {
         val parent = graph.defaultParent
         val childCount = graph.model.getChildCount(parent)
         for (i in 0 until childCount) {
@@ -118,7 +105,7 @@ class GraphManager(private val graph: mxGraph) {
         return frequencyMap.getOrDefault(id, 0)
     }
 
-    private fun isLeaf(vertex: mxCell): Boolean {
+    fun isLeaf(vertex: mxCell): Boolean {
         return graph.model.getEdgeCount(vertex) == 0 ||
                 (0 until graph.model.getEdgeCount(vertex)).all { i ->
                     val edge = graph.model.getEdgeAt(vertex, i) as mxCell
@@ -128,38 +115,25 @@ class GraphManager(private val graph: mxGraph) {
     }
 
     private fun colorPathToRoot(vertex: mxCell, color: String) {
-        println("Color Update Start")
+        // println("Color Update Start")
         var i = 1
         var currentVertex: mxCell? = vertex
         while (currentVertex != null) {
-            println("Current vertex $i : " + currentVertex.id)
-
-            println(currentVertex.id + " ist " + getFrequencyByVertexId(currentVertex.id) + " mal vorgekommen.")
-            println(vertex.id + " ist " + getFrequencyByVertexId(vertex.id) + " mal vorgekommen." )
 
             // Falls Elternknoten bereits höhere Farbe hat, höre mit der Färbung auf.
             if(!shouldRecolor(extractColor(graph.getCellStyle(currentVertex)), color)) { break }
-
-//            if(getFrequencyByVertexId(currentVertex.id) > getFrequencyByVertexId(vertex.id) && currentVertex.id != vertex.id) {
-//                break;
-//            }
 
             val fillColor = color
             val textColor = if (color in listOf("green", "blue", "red")) "white" else "black"
 
             graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, fillColor, arrayOf(currentVertex))
             graph.setCellStyles(mxConstants.STYLE_FONTCOLOR, textColor, arrayOf(currentVertex))
-            println("Vertex: " + currentVertex.id + " wird in " + fillColor + " gefärbt.")
-            // sleep(200)
 
             val incomingEdges = getIncomingEdges(currentVertex)
             if (incomingEdges.isNotEmpty()) {
                 val parentEdge = incomingEdges.first()
                 val parentVertex = graph.model.getTerminal(parentEdge, true) as mxCell?
-                println("Incomming Edge: " + parentVertex!!.value)
                 graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, color, arrayOf(parentEdge))
-                println("Edge: (" + currentVertex.id + ", " + parentVertex!!.id + ") wird in " + fillColor + " gefärbt.")
-                // sleep(200)
 
                 currentVertex = parentVertex
             } else {
@@ -234,20 +208,8 @@ class GraphManager(private val graph: mxGraph) {
         return vertexId.split(".").last().toLowerCase().capitalize()
     }
 
-    fun graphRefresh() {
-        graph.model.endUpdate()
-        graphComponent.refresh()
-    }
-
-    fun getGraph(): mxGraph {
-        return graph
-    }
-
     fun getRoot():Any {
         return rootNode
     }
 
-    fun getParent(): Any {
-        return parent
-    }
 }

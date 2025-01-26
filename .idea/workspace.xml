@@ -5,8 +5,37 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="TSC in GUI - final (ohne Vorschlag Generierung)">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/JsonHelper.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/dataclass/WeatherCombinationData.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/dataclass/WeatherCombinationPair.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/repository/WeatherCombinationRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/service/TranslationService.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/service/WeatherCombinationService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Experiment.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Experiment.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration2.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration3.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/Serializer/CustomMapSerializer.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/JsonHelper.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/ColorSwingPrinter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/MNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/NodePrinter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/NodePrinterTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/RootNode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/SwingPrinter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/tree_test/TreeCanvas.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/evaluation/TSCEvaluation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/evaluation/TSCEvaluation.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/metric/utils/JsonDataSaver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/stars-core/src/main/kotlin/tools/aqua/stars/core/metric/utils/JsonDataSaver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars/stars-importer-carla/src/main/kotlin/tools/aqua/stars/importer/carla/carlaDataFileHandling.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/stars-importer-carla/src/main/kotlin/tools/aqua/stars/importer/carla/carlaDataFileHandling.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../stars/stars-importer-carla/src/main/kotlin/tools/aqua/stars/importer/carla/runSegmentation.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars/stars-importer-carla/src/main/kotlin/tools/aqua/stars/importer/carla/runSegmentation.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,13 +67,14 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Kotlin Class" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
+        <option value="Kotlin Object" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../stars" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -63,7 +93,7 @@
     "Kotlin.Mainkt.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main-tsc-gui",
+    "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Lee/TU-Dortmund/Bachelorarbeit/Code/GUI/src/main/kotlin/tools/aqua/stars/carla/experiments/gui",
     "node.js.detected.package.eslint": "true",
@@ -87,6 +117,7 @@
       <recent name="C:\Lee\TU-Dortmund\Bachelorarbeit\Code\GUI\src\main\kotlin\tools\aqua\stars\carla\experiments" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="tools.aqua.stars.carla.experiments.gui.service" />
       <recent name="tools.aqua.stars.carla.experiments" />
     </key>
   </component>
@@ -126,6 +157,7 @@
       <workItem from="1736818665991" duration="222000" />
       <workItem from="1736845614904" duration="806000" />
       <workItem from="1737150202003" duration="1213000" />
+      <workItem from="1737899850247" duration="13652000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -164,6 +196,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />

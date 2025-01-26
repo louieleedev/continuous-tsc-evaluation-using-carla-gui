@@ -35,6 +35,10 @@ dependencies {
     implementation("com.github.vlsi.mxgraph:jgraphx:4.2.2")
 
     implementation("guru.nidi:graphviz-java:0.18.1")
+
+    implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 }
 
 tasks.test {
