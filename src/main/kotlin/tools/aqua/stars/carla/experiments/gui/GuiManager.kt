@@ -374,47 +374,7 @@ class GuiManager {
 
             if (unseenNodes.isNotEmpty()) {
                 // Gui Vorschlag
-                // Zufälligen Knoten auswählen
-                val randomLeaf = filteredUnseenNodes.random()
-                addSuggestion(randomLeaf)
-
-                SwingUtilities.invokeLater {
-                    try {
-                        val dialog = JDialog(frame, "Vorschlag", true)
-                        dialog.layout = BorderLayout()
-
-                        // Erstellen des JLabels mit Zentrierung
-                        val label = JLabel(translateSuggestionMessage(randomLeaf))
-                        label.horizontalAlignment = JLabel.CENTER
-                        label.verticalAlignment = JLabel.CENTER
-                        val labelFont = label.font
-                        label.font = Font(labelFont.name, labelFont.style, 20)
-
-                        // Verwendung von GridBagLayout für vollständige Zentrierung
-                        val panel = JPanel(GridBagLayout())
-                        val gbc = GridBagConstraints()
-                        gbc.gridx = 0
-                        gbc.gridy = 0
-                        gbc.weightx = 1.0
-                        gbc.weighty = 1.0
-                        gbc.fill = GridBagConstraints.BOTH
-                        panel.add(label, gbc)
-
-                        // Hinzufügen des Panels zum Dialog
-                        dialog.add(panel, BorderLayout.CENTER)
-                        dialog.setSize(1000, 300)
-                        dialog.setLocationRelativeTo(frame)
-
-                        // Timer zum automatischen Schließen des Dialogs
-                        val timer = Timer(5000) { e -> dialog.dispose() }
-                        timer.isRepeats = false
-                        timer.start()
-
-                        dialog.isVisible = true
-                    } catch (e: Exception) {
-                        e.printStackTrace() // Druckt die Stack Trace im Fehlerfall
-                    }
-                }
+                buildSuggestion(filteredUnseenNodes)
             }
             countCriteria = countCriteria + 1
         }
@@ -437,6 +397,49 @@ class GuiManager {
 
         val i = countCriteria - updatesCount
         println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
+    }
+
+    private fun buildSuggestion(unseenNodes: List<String>) {
+        val randomLeaf = unseenNodes.random()
+        addSuggestion(randomLeaf)
+
+        SwingUtilities.invokeLater {
+            try {
+                val dialog = JDialog(frame, "Vorschlag", true)
+                dialog.layout = BorderLayout()
+
+                // Erstellen des JLabels mit Zentrierung
+                val label = JLabel(translateSuggestionMessage(randomLeaf))
+                label.horizontalAlignment = JLabel.CENTER
+                label.verticalAlignment = JLabel.CENTER
+                val labelFont = label.font
+                label.font = Font(labelFont.name, labelFont.style, 20)
+
+                // Verwendung von GridBagLayout für vollständige Zentrierung
+                val panel = JPanel(GridBagLayout())
+                val gbc = GridBagConstraints()
+                gbc.gridx = 0
+                gbc.gridy = 0
+                gbc.weightx = 1.0
+                gbc.weighty = 1.0
+                gbc.fill = GridBagConstraints.BOTH
+                panel.add(label, gbc)
+
+                // Hinzufügen des Panels zum Dialog
+                dialog.add(panel, BorderLayout.CENTER)
+                dialog.setSize(1200, 300)
+                dialog.setLocationRelativeTo(frame)
+
+                // Timer zum automatischen Schließen des Dialogs
+                val timer = Timer(5000) { e -> dialog.dispose() }
+                timer.isRepeats = false
+                timer.start()
+
+                dialog.isVisible = true
+            } catch (e: Exception) {
+                e.printStackTrace() // Druckt die Stack Trace im Fehlerfall
+            }
+        }
     }
 
     private fun addSuggestion(suggestion: String) {
