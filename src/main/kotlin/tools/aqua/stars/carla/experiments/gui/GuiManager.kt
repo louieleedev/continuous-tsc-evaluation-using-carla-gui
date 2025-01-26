@@ -29,22 +29,23 @@ class GuiManager {
     private val root = graphManager.getRoot()
     private var graphComponent: mxGraphComponent? = null
     private val frame = JFrame("Baumdarstellung mit JGraphX")
-    private val comboBox = JComboBox<String>(
-        arrayOf(
-            "full TSC",
-            "layer 1+2",
-            "layer 4",
-            "layer 1+2+4",
-            "layer (4)+5",
-            "pedestrian",
-            "multi-lane-dynamic-relations"
-        )
-    )
 
     private val defaultTSC = tsc()
     private val tscList = defaultTSC.buildProjections()
 
-    private var layer: String = "full TSC"
+    private val tscIdentifiers = arrayOf(
+        "full TSC",
+        "layer 1+2",
+        "layer 4",
+        "layer 1+2+4",
+        "layer (4)+5",
+        "pedestrian",
+        "multi-lane-dynamic-relations"
+    )
+
+    private val tscIdentifiersDropdown = JComboBox<String>(tscIdentifiers)
+
+    private var selectedLayer: String = "full TSC"
 
     companion object {
         const val FRAME_WIDTH = 1800.0
@@ -87,11 +88,11 @@ class GuiManager {
         frame.contentPane.add(graphComponent)
 
         // TSC-Layer Drop Box
-        comboBox.addActionListener { e ->
-            val selectedLayer = comboBox.selectedItem as String
+        tscIdentifiersDropdown.addActionListener { e ->
+            val selectedLayer = tscIdentifiersDropdown.selectedItem as String
             updateGraph(selectedLayer)
         }
-        frame.add(comboBox, BorderLayout.NORTH)
+        frame.add(tscIdentifiersDropdown, BorderLayout.NORTH)
 
         // Vorschläge
         val rightPanel = JPanel()
@@ -147,7 +148,8 @@ class GuiManager {
             if (selectedItem is String) {
                 selectedWeather = extractWeatherType(selectedItem)
                 println("selectedWeather: " + selectedWeather)
-                updateWeatherCombinationList(selectedWeather, combinationListModel)
+                // updateWeatherCombinationList(selectedWeather, combinationListModel)
+                updateWeatherCombinationList(selectedLayer, selectedWeather, combinationListModel)
             }
         }
 
@@ -157,7 +159,8 @@ class GuiManager {
         parent.add(weatherCombinationPanel)
 
         // Initialisiere die Dropdown-Box
-        initializeWeatherDropdown(weatherDropdown)
+        // initializeWeatherDropdown(weatherDropdown)
+        initializeWeatherDropdown(selectedLayer, weatherDropdown)
     }
 
     private fun initializeWeatherDropdown(weatherDropdown: JComboBox<String>) {
@@ -184,9 +187,34 @@ class GuiManager {
         }
     }
 
+    private fun initializeWeatherDropdown(tscIdentifier: String, tscweatherDropdown: JComboBox<String>) {
+
+        val currentSelection = weatherDropdown.selectedItem as? String ?: "Wähle ein Wetter aus"
+
+        weatherDropdown.removeAllItems()
+
+        // Standardhinweis
+        weatherDropdown.addItem("Wähle ein Wetter aus")
+
+        // Füge alle Wettersorten mit der Anzahl der Kombinationen hinzu
+        weatherCombinationService.getMissingCombinationMap(tscIdentifier)?.forEach { (key, values) ->
+            val weatherKey = translateWeatherkeyToDisplay(key)
+            weatherDropdown.addItem("$weatherKey (${values.size})")
+        }
+
+        // Stelle die vorherige Auswahl wieder her
+        if (weatherDropdown.getItemCount() > 0) {
+            val index = (0 until weatherDropdown.getItemCount()).find {
+                weatherDropdown.getItemAt(it) == currentSelection || weatherDropdown.getItemAt(it).startsWith(extractWeatherType(currentSelection))
+            } ?: 0
+            weatherDropdown.selectedIndex = index
+        }
+    }
+
     fun updateWeatherDropdown() {
         SwingUtilities.invokeLater {
-            initializeWeatherDropdown(weatherDropdown)
+            // initializeWeatherDropdown(weatherDropdown)
+            initializeWeatherDropdown(selectedLayer, weatherDropdown)
         }
     }
 
@@ -195,6 +223,19 @@ class GuiManager {
         SwingUtilities.invokeLater {
             model.clear()
             val combinations = weatherCombinationService.getMissingCombinationMap()[translateWeatherToKey(weatherType)]
+            if (combinations != null) {
+                combinations.forEach { model.addElement(translateSuggestionLog(it)) }
+            }
+            combinationList.revalidate()
+            combinationList.repaint()
+        }
+    }
+
+    private fun updateWeatherCombinationList(tscIdentifier: String, weatherType: String, model: DefaultListModel<String>) {
+        println("weatherType" + weatherType)
+        SwingUtilities.invokeLater {
+            model.clear()
+            val combinations = weatherCombinationService.getMissingCombinationMap(tscIdentifier)?.get(translateWeatherToKey(weatherType))
             if (combinations != null) {
                 combinations.forEach { model.addElement(translateSuggestionLog(it)) }
             }
@@ -418,15 +459,15 @@ class GuiManager {
         }
     }
 
-    private fun buildPath(tscIdentifier: String, foldernameInResult: String, newData: String): String {
+    private fun buildPath(newFolder: String, metric: String, tscIdentifier: String): String {
 
         val resultPath = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"
         val resultsDir = File(resultPath)
-        sleep(1000)
+        sleep(100)
 
         if (resultsDir.exists() && resultsDir.isDirectory) {
 
-            var finalResult = Paths.get(resultPath, newData, foldernameInResult, "$tscIdentifier.json").toString()
+            var finalResult = Paths.get(resultPath, newFolder, metric, "$tscIdentifier.json").toString()
             val jsonFile = File(finalResult)
 
             if (jsonFile.exists()) {
@@ -461,7 +502,7 @@ class GuiManager {
                     val filename = ev.context()
 
                     println("Neue Datei erstellt: ${filename.toString()}")
-                    val pathWithNewData = buildPath("full TSC", "valid-tsc-instances-per-tsc", filename.toString())
+                    val pathWithNewData = buildPath(filename.toString(), "valid-tsc-instances-per-tsc","full TSC")
 
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
                     if (pathWithNewData != "ERROR") {
@@ -470,11 +511,18 @@ class GuiManager {
                         updatesCount++
                         checkAndUpdateSuggestions()
 
-                        // MissedPredicateCombinations für Kombination Wetter und Straßentypen
-                        val pathForMissedPredicateCombinations = buildPath("full TSC", "missed-predicate-combinations", filename.toString())
-                        weatherCombinationService.analyseMissingWeatherCombination(pathForMissedPredicateCombinations)
+                         // MissedPredicateCombinations für Kombination Wetter und Straßentypen
+//                         val pathForMissedPredicateCombinations = buildPath(filename.toString(), "missed-predicate-combinations", "full TSC")
+//                         weatherCombinationService.analyseMissingWeatherCombination(pathForMissedPredicateCombinations)
+
+                        tscIdentifiers.forEach { identifier ->
+                            val pathForMissedPredicateCombinations = buildPath(filename.toString(), "missed-predicate-combinations", identifier)
+                            weatherCombinationService.analyseAllMissingWeatherCombination(pathForMissedPredicateCombinations, identifier)
+                        }
+
                         updateWeatherDropdown()
-                        updateWeatherCombinationList(selectedWeather, combinationListModel)
+                        // updateWeatherCombinationList(selectedWeather, combinationListModel)
+                        updateWeatherCombinationList(selectedLayer, selectedWeather, combinationListModel)
                     } else {
                         println("Ungültiger Pfad: $pathWithNewData, Überspringe Verarbeitung für diese Datei.")
                     }
@@ -510,10 +558,12 @@ class GuiManager {
     }
 
     private fun updateGraph(layer: String) {
-        this.layer = layer
+        this.selectedLayer = layer
         println("Selected layer: $layer")
         buildGraph()
         // buildTeilgraph(layer)
+        updateWeatherDropdown()
+        updateWeatherCombinationList(selectedLayer, selectedWeather, combinationListModel)
     }
 
     fun convertToID(oldId: String, newId: String): String {
@@ -525,7 +575,7 @@ class GuiManager {
     }
 
     private fun getLayer(): String {
-        return layer
+        return selectedLayer
     }
 
 }
