@@ -4,8 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="Wetterkombination mit gewähltem TSC Identifier">
+    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="Wetterkombination mit gewähltem TSC Identifier - aufgeräumt">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/helper/SuggestionListCellRenderer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GraphManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/service/TranslationService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/service/TranslationService.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,8 +42,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin File" />
-        <option value="Kotlin Class" />
         <option value="Kotlin Object" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -127,7 +131,7 @@
       <workItem from="1736818665991" duration="222000" />
       <workItem from="1736845614904" duration="806000" />
       <workItem from="1737150202003" duration="1213000" />
-      <workItem from="1737899850247" duration="20170000" />
+      <workItem from="1737899850247" duration="29784000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -177,7 +181,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737919910093</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Wetterkombination mit gewähltem TSC Identifier - aufgeräumt">
+      <option name="closed" value="true" />
+      <created>1737920464268</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1737920464268</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -201,6 +213,7 @@
     <MESSAGE value="TSC in GUI - final (ohne Vorschlag Generierung)" />
     <MESSAGE value="funktioniert - 26.01" />
     <MESSAGE value="Wetterkombination mit gewähltem TSC Identifier" />
-    <option name="LAST_COMMIT_MESSAGE" value="Wetterkombination mit gewähltem TSC Identifier" />
+    <MESSAGE value="Wetterkombination mit gewähltem TSC Identifier - aufgeräumt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Wetterkombination mit gewähltem TSC Identifier - aufgeräumt" />
   </component>
 </project>

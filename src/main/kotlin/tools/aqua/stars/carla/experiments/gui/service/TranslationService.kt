@@ -93,4 +93,20 @@ object TranslationService {
         }
     }
 
+    fun translateSuggestionToKey(suggestion: String): String {
+
+        val modifiedValue = when {
+            "RED LIGHT" in suggestion -> suggestion.replace("RED LIGHT", "HASREDLIGHT")
+            "STOP SIGN" in suggestion -> suggestion.replace("STOP SIGN", "HASSTOPSIGN")
+            "YIELD SIGN" in suggestion -> suggestion.replace("YIELD SIGN", "HASYIELDSIGN")
+            else -> suggestion
+        }
+
+        val cleanedValue = modifiedValue
+            .replace(" -> ", ".")
+            .replace(" ", "")
+
+        return "ROOT.ROADTYPE.$cleanedValue"
+    }
+
 }

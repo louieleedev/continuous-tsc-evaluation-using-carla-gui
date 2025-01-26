@@ -12,6 +12,7 @@ class GraphManager(private val graph: mxGraph) {
     private val parent = graph.defaultParent
     private val rootNode = graph.insertVertex(parent, "ROOT", "Root", 5.0, 450.0, 80.0, 30.0, "fillColor=white;strokeColor=black;")
     private val frequencyMap: MutableMap<String, Int> = mutableMapOf()
+    private val frequencyMapTscIdentifier: MutableMap<String, MutableMap<String, Int>> = mutableMapOf()
     private val colorPriority = mapOf(
         "#69a4a7" to 1,
         "#5da7ab" to 2,
@@ -100,6 +101,11 @@ class GraphManager(private val graph: mxGraph) {
     fun getFrequencyMap(): MutableMap<String, Int> {
         return frequencyMap
     }
+
+    fun getFrequencyMap(tscIdentifier: String): MutableMap<String, Int> {
+        return frequencyMapTscIdentifier[tscIdentifier] ?: mutableMapOf()
+    }
+
 
     private fun getFrequencyByVertexId(id: String): Int {
         return frequencyMap.getOrDefault(id, 0)

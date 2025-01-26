@@ -2,9 +2,11 @@ package tools.aqua.stars.carla.experiments.gui
 
 import com.mxgraph.swing.mxGraphComponent
 import com.mxgraph.view.mxGraph
+import tools.aqua.stars.carla.experiments.gui.helper.SuggestionListCellRenderer
 import tools.aqua.stars.carla.experiments.gui.service.WeatherCombinationService
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionLog
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionMessage
+import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionToKey
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateWeatherToKey
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateWeatherkeyToDisplay
 import tools.aqua.stars.core.metric.serialization.tsc.SerializableTSCNode
@@ -301,6 +303,8 @@ class GuiManager {
             }
         }
         updateColor()
+
+        // println("All Leafs: " + allLeafs)
     }
 
     private fun updateLeafs(id: String) {
@@ -344,6 +348,13 @@ class GuiManager {
 
     private fun updateColor() {
         val frequencyMap = graphManager.getFrequencyMap()
+        frequencyMap.forEach{ (id, frequency) ->
+            graphManager.updatePathToRootIfLeaf(id, frequency)
+        }
+    }
+
+    private fun updateColor(tscIdentifier: String) {
+        val frequencyMap = graphManager.getFrequencyMap(tscIdentifier)
         frequencyMap.forEach{ (id, frequency) ->
             graphManager.updatePathToRootIfLeaf(id, frequency)
         }
@@ -399,8 +410,54 @@ class GuiManager {
         println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
     }
 
+    private fun checkAndUpdateSuggestions2() {
+
+        val unseenNodes = mutableListOf<String>()
+        val seenLeafs = graphManager.getFrequencyMap().keys.filter { id ->
+            // getFrequencyMap() gibt Frequenzen von dem gesamten TSC (Full TSC).
+            // findVertexById(id) kann daher keinen Knoten finden, wenn der aktuelle Baum kein Full TSC ist.
+            // Solche Knoten sind zu ignorieren, da sie nichtmal im Baum sind.
+            val vertex = graphManager.findVertexById(id)
+            vertex?.let { graphManager.isLeaf(it) } ?: false
+        }.toSet()
+
+        // sennLeafs enthält nur Blätter die in dem aktuell gezeichneten TSC mind. 1 mal gesehen wurde.
+        println("Folgende Knoten wurden gesehen: $seenLeafs")
+
+        allLeafs.keys.forEach { leafId ->           // allLeafs enthält alle Blätter von dem aktuellen TSC in GUI
+            if (!seenLeafs.contains(leafId)) {      // Prüfe, ob das Blatt in seenLeafs enthalten ist
+                unseenNodes.add(leafId)             // Füge das nicht gesehene Blatt zu unseenNodes hinzu
+            }
+        }
+        println("Folgende Knoten wurden noch nicht gesehen: $unseenNodes")
+
+        // Filtere die Knoten, die nicht zu den Kategorien WEATHER, TRAFFICDENSITY oder TIMEOFDAY gehören
+        val filteredUnseenNodes = unseenNodes.filterNot {
+            it.contains("WEATHER") || it.contains("TRAFFICDENSITY") || it.contains("TIMEOFDAY")
+        }
+
+        if (updatesCount > countCriteria && filteredUnseenNodes.isNotEmpty()) {
+            if (unseenNodes.isNotEmpty()) {
+                buildSuggestion(filteredUnseenNodes)
+            }
+            countCriteria = countCriteria + 1
+        }
+
+        updateSuggestionList(seenLeafs)
+
+        val i = countCriteria - updatesCount
+        println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
+    }
+
     private fun buildSuggestion(unseenNodes: List<String>) {
-        val randomLeaf = unseenNodes.random()
+
+        // println("unseenNodes: " + unseenNodes)
+        var randomLeaf = unseenNodes.random()
+        // addSuggestion(randomLeaf)
+
+        while (suggestionsMap.containsKey(randomLeaf)) {
+            randomLeaf = unseenNodes.random()
+        }
         addSuggestion(randomLeaf)
 
         SwingUtilities.invokeLater {
@@ -444,9 +501,43 @@ class GuiManager {
 
     private fun addSuggestion(suggestion: String) {
         // Füge den Vorschlag zum Map und zur JList hinzu
-        if (!suggestionsMap.containsKey(suggestion)) {
-            suggestionsMap[suggestion] = translateSuggestionLog(suggestion)        // Speichert den Vorschlag
-            suggestionsListModel.addElement(translateSuggestionLog(suggestion))    // Fügt den Vorschlag zur GUI hinzu
+        suggestionsMap[suggestion] = translateSuggestionLog(suggestion)        // Speichert den Vorschlag
+        suggestionsListModel.addElement(translateSuggestionLog(suggestion))    // Fügt den Vorschlag zur GUI hinzu
+    }
+
+    private fun updateSuggestionList(seenLeafs: Set<String>) {
+        if (suggestionsMap.isNotEmpty()) {
+            println("Aktuelle Vorschläge: ")
+            print(suggestionsMap)
+            println("")
+
+            val iterator = suggestionsMap.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                if (seenLeafs.contains(entry.key)) {
+                    println("Da der Knoten ${entry.key} gesehen wurde, wird er von der Vorschlagliste entfernt.")
+                    iterator.remove()                                   // Sicher entfernen mit dem Iterator
+                    suggestionsListModel.removeElement(entry.value)     // Auch aus der GUI-Liste entfernen
+                }
+            }
+
+            // Wenn suggestionsMap Vorschläge (Knoten) enthlät, die nicht mal allLeafs vorkommen,
+            // Soll diese Vorschläge in GUI grau formatiert werden.
+            // Sonst sollen Vorschläge (weil es sein kann, dass vorher gestrichen war) wieder normal in schwarz formatiert werden.
+
+            // Erstelle und setze einen neuen Renderer mit der aktuellen Liste gültiger Knoten
+//            suggestionsMap.forEach { (suggestionId, msg) ->
+//                val renderer = SuggestionListCellRenderer(suggestionId, allLeafs)
+//                suggestionsList.cellRenderer = renderer
+//            }
+//            suggestionsList.repaint()
+            for (i in 0 until suggestionsListModel.size()) {
+                val item = suggestionsListModel.getElementAt(i)
+                println("Suggestion Value: " + item) // Druckt jedes Element in der Liste
+                println("Suggestion Key: " + translateSuggestionToKey(item))
+            }
+            suggestionsList.cellRenderer = SuggestionListCellRenderer(allLeafs)
+            suggestionsList.repaint()
         }
     }
 
@@ -510,9 +601,10 @@ class GuiManager {
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
                     if (pathWithNewData != "ERROR") {
                         readResultFromJson(pathWithNewData)
+                        // updateColor()
                         updateColor()
                         updatesCount++
-                        checkAndUpdateSuggestions()
+                        checkAndUpdateSuggestions2()
 
                          // MissedPredicateCombinations für Kombination Wetter und Straßentypen
 //                         val pathForMissedPredicateCombinations = buildPath(filename.toString(), "missed-predicate-combinations", "full TSC")
@@ -564,7 +656,6 @@ class GuiManager {
         this.selectedLayer = layer
         println("Selected layer: $layer")
         buildGraph()
-        // buildTeilgraph(layer)
         updateWeatherDropdown()
         updateWeatherCombinationList(selectedLayer, selectedWeather, combinationListModel)
     }
