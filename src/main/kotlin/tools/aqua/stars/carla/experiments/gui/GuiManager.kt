@@ -557,7 +557,7 @@ class GuiManager {
 
         val resultPath = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"
         val resultsDir = File(resultPath)
-        sleep(100)
+        // sleep(200)
 
         if (resultsDir.exists() && resultsDir.isDirectory) {
 
@@ -578,6 +578,38 @@ class GuiManager {
         return "ERROR"
     }
 
+    private fun buildPath2(newFolder: String, metric: String, tscIdentifier: String): String {
+        val resultPath = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"
+        val resultsDir = File(resultPath)
+
+        if (!resultsDir.exists() || !resultsDir.isDirectory) {
+            println("Das angegebene Verzeichnis existiert nicht oder ist kein Verzeichnis: $resultPath")
+            return "ERROR"
+        }
+
+        val finalResult = Paths.get(resultPath, newFolder, metric, "$tscIdentifier.json").toString()
+        val jsonFile = File(finalResult)
+
+        // Polling
+        val maxAttempts = 10
+        var attempt = 0
+
+        while (attempt < maxAttempts) {
+            if (jsonFile.exists()) {
+                println("Datei gefunden: ${jsonFile.path}")
+                return finalResult
+            } else {
+                println("Warte auf die Datei: ${jsonFile.path}")
+                Thread.sleep(100)
+                attempt++
+            }
+        }
+
+        println("Datei nicht gefunden nach $maxAttempts Versuchen: ${jsonFile.path}")
+        return "ERROR"
+    }
+
+
     fun watchDirectory(path: Path) {
         val watchService = FileSystems.getDefault().newWatchService()
         path.register(watchService, ENTRY_CREATE)
@@ -596,7 +628,7 @@ class GuiManager {
                     val filename = ev.context()
 
                     println("Neue Datei erstellt: ${filename.toString()}")
-                    val pathWithNewData = buildPath(filename.toString(), "valid-tsc-instances-per-tsc","full TSC")
+                    val pathWithNewData = buildPath2(filename.toString(), "valid-tsc-instances-per-tsc","full TSC")
 
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
                     if (pathWithNewData != "ERROR") {
@@ -611,7 +643,7 @@ class GuiManager {
 //                         weatherCombinationService.analyseMissingWeatherCombination(pathForMissedPredicateCombinations)
 
                         tscIdentifiers.forEach { identifier ->
-                            val pathForMissedPredicateCombinations = buildPath(filename.toString(), "missed-predicate-combinations", identifier)
+                            val pathForMissedPredicateCombinations = buildPath2(filename.toString(), "missed-predicate-combinations", identifier)
                             weatherCombinationService.analyseAllMissingWeatherCombination(pathForMissedPredicateCombinations, identifier)
                         }
 

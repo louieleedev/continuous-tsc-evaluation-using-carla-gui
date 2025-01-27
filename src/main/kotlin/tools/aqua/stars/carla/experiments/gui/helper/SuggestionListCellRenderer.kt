@@ -29,29 +29,3 @@ class SuggestionListCellRenderer(
         return renderer
     }
 }
-
-//class SuggestionListCellRenderer(
-//    private val validSuggestion: String,
-//    private val allLeafs: Map<String, Int>
-//) : ListCellRenderer<String> {
-//    private val defaultRenderer = DefaultListCellRenderer()
-//
-//    override fun getListCellRendererComponent(
-//        list: JList<out String>,
-//        value: String,
-//        index: Int,
-//        isSelected: Boolean,
-//        cellHasFocus: Boolean
-//    ): Component {
-//        val renderer = defaultRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus) as JLabel
-//
-//        // Überprüfen, ob der Vorschlag im aktuellen Baum gültig ist, d.h. überhaupt erreichbar ist
-//        if (!allLeafs.keys.contains(validSuggestion)) {
-//            renderer.foreground = Color.GRAY // Setze die Schriftfarbe auf Grau für ungültige Vorschläge
-//        } else {
-//            renderer.foreground = Color.BLACK // Setze die Schriftfarbe auf Schwarz für gültige Vorschläge
-//        }
-//
-//        return renderer
-//    }
-//}
