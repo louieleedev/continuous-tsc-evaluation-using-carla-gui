@@ -360,56 +360,6 @@ class GuiManager {
         }
     }
 
-    private fun checkAndUpdateSuggestions() {
-
-        val unseenNodes = mutableListOf<String>()
-        val seenLeafs = graphManager.getFrequencyMap().keys.filter { id ->
-            val vertex = graphManager.findVertexById(id)
-            graphManager.isLeaf(vertex!!)
-        }.toSet()
-        println("Folgende Knoten wurden gesehen: $seenLeafs")
-
-        allLeafs.keys.forEach { leafId ->
-            if (!seenLeafs.contains(leafId)) { // Prüfe, ob das Blatt in seenLeafs enthalten ist
-                unseenNodes.add(leafId) // Füge das nicht gesehene Blatt zu unseenNodes hinzu
-            }
-        }
-        println("Folgende Knoten wurden noch nicht gesehen: $unseenNodes")
-
-        // Filtere die Knoten, die nicht zu den Kategorien WEATHER, TRAFFICDENSITY oder TIMEOFDAY gehören
-        val filteredUnseenNodes = unseenNodes.filterNot {
-            it.contains("WEATHER") || it.contains("TRAFFICDENSITY") || it.contains("TIMEOFDAY")
-        }
-
-        if (updatesCount > countCriteria) {
-
-            if (unseenNodes.isNotEmpty()) {
-                // Gui Vorschlag
-                buildSuggestion(filteredUnseenNodes)
-            }
-            countCriteria = countCriteria + 1
-        }
-
-        if (suggestionsMap.isNotEmpty()) {
-            println("Aktuelle Vorschläge: ")
-            print(suggestionsMap)
-            println("")
-
-            val iterator = suggestionsMap.iterator()
-            while (iterator.hasNext()) {
-                val entry = iterator.next()
-                if (seenLeafs.contains(entry.key)) {
-                    println("Da der Knoten ${entry.key} gesehen wurde, wird er von der Vorschlagliste entfernt.")
-                    iterator.remove() // Sicher entfernen mit dem Iterator
-                    suggestionsListModel.removeElement(entry.value) // Auch aus der GUI-Liste entfernen
-                }
-            }
-        }
-
-        val i = countCriteria - updatesCount
-        println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
-    }
-
     private fun checkAndUpdateSuggestions2() {
 
         val unseenNodes = mutableListOf<String>()
@@ -436,12 +386,16 @@ class GuiManager {
             it.contains("WEATHER") || it.contains("TRAFFICDENSITY") || it.contains("TIMEOFDAY")
         }
 
+        println("filteredUnseenNodes wurde gefiltert: " + filteredUnseenNodes)
+
         if (updatesCount > countCriteria && filteredUnseenNodes.isNotEmpty()) {
             if (unseenNodes.isNotEmpty()) {
-                buildSuggestion(filteredUnseenNodes)
+                buildSuggestion2(filteredUnseenNodes)
             }
             countCriteria = countCriteria + 1
         }
+
+        println("updatesCount > countCriteria Bedingung wurde geprüft, updateCount: " + updatesCount + ", countCriteria: " +countCriteria)
 
         updateSuggestionList(seenLeafs)
 
@@ -451,12 +405,16 @@ class GuiManager {
 
     private fun buildSuggestion(unseenNodes: List<String>) {
 
-        // println("unseenNodes: " + unseenNodes)
+        println("buildSuggestion wurde gerufen")
         var randomLeaf = unseenNodes.random()
         // addSuggestion(randomLeaf)
 
         while (suggestionsMap.containsKey(randomLeaf)) {
+            println("while Schleife wird gerufen für die Prüfung suggestionsMap.containsKey(randomLeaf)")
             randomLeaf = unseenNodes.random()
+            println("suggestionsMap: " + suggestionsMap)
+            println("randomLeaf: " + randomLeaf)
+            sleep(100)
         }
         addSuggestion(randomLeaf)
 
@@ -499,6 +457,55 @@ class GuiManager {
         }
     }
 
+    private fun buildSuggestion2(unseenNodes: List<String>) {
+
+        // Filtere unseenNodes, um nur die Nodes zu behalten, die nicht in suggestionsMap sind
+        val validUnseenNodes = unseenNodes.filter { !suggestionsMap.containsKey(it) }
+        println("validUnseenNodes: " + validUnseenNodes)
+
+        // Überprüfe, ob es gültige unseen Nodes gibt
+        if (validUnseenNodes.isNotEmpty()) {
+            var randomLeaf = validUnseenNodes.random()
+            addSuggestion(randomLeaf)
+
+            SwingUtilities.invokeLater {
+                try {
+                    val dialog = JDialog(frame, "Vorschlag", true)
+                    dialog.layout = BorderLayout()
+
+                    val label = JLabel(translateSuggestionMessage(randomLeaf))
+                    label.horizontalAlignment = JLabel.CENTER
+                    label.verticalAlignment = JLabel.CENTER
+                    val labelFont = label.font
+                    label.font = Font(labelFont.name, labelFont.style, 20)
+
+                    val panel = JPanel(GridBagLayout())
+                    val gbc = GridBagConstraints()
+                    gbc.gridx = 0
+                    gbc.gridy = 0
+                    gbc.weightx = 1.0
+                    gbc.weighty = 1.0
+                    gbc.fill = GridBagConstraints.BOTH
+                    panel.add(label, gbc)
+
+                    dialog.add(panel, BorderLayout.CENTER)
+                    dialog.setSize(1200, 300)
+                    dialog.setLocationRelativeTo(frame)
+
+                    val timer = Timer(5000) { e -> dialog.dispose() }
+                    timer.isRepeats = false
+                    timer.start()
+
+                    dialog.isVisible = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            println("Keine gültigen unseen Nodes verfügbar. Vorschlag kann nicht gemacht werden.")
+        }
+    }
+
     private fun addSuggestion(suggestion: String) {
         // Füge den Vorschlag zum Map und zur JList hinzu
         suggestionsMap[suggestion] = translateSuggestionLog(suggestion)        // Speichert den Vorschlag
@@ -506,7 +513,10 @@ class GuiManager {
     }
 
     private fun updateSuggestionList(seenLeafs: Set<String>) {
+        println("updateSuggestionList wurde geruden")
         if (suggestionsMap.isNotEmpty()) {
+            println("SuggestionMap ist nicht leer. SuggestionMap: " + suggestionsMap)
+
             println("Aktuelle Vorschläge: ")
             print(suggestionsMap)
             println("")
@@ -597,6 +607,7 @@ class GuiManager {
         while (attempt < maxAttempts) {
             if (jsonFile.exists()) {
                 println("Datei gefunden: ${jsonFile.path}")
+                Thread.sleep(100)
                 return finalResult
             } else {
                 println("Warte auf die Datei: ${jsonFile.path}")
