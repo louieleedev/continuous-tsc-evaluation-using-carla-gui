@@ -20,7 +20,10 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.WatchEvent
+import java.util.*
 import javax.swing.*
+import javax.swing.Timer
+import kotlin.collections.ArrayList
 import kotlin.math.floor
 
 
@@ -46,6 +49,8 @@ class GuiManager {
     )
 
     private val tscIdentifiersDropdown = JComboBox<String>(tscIdentifiers)
+
+    private val timeMap = mutableMapOf<String, Double>()
 
     private var selectedLayer: String = "full TSC"
 
@@ -639,6 +644,7 @@ class GuiManager {
                     val filename = ev.context()
 
                     println("Neue Datei erstellt: ${filename.toString()}")
+                    val startTime = System.nanoTime()
                     val pathWithNewData = buildPath2(filename.toString(), "valid-tsc-instances-per-tsc","full TSC")
 
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
@@ -646,6 +652,13 @@ class GuiManager {
                         readResultFromJson(pathWithNewData)
                         // updateColor()
                         updateColor()
+
+                        val endTime = System.nanoTime() // Endzeit messen
+                        val duration = (endTime - startTime) / 1_000_000.0 // Dauer in Millisekunden berechnen
+                        val roundedDuration = String.format(Locale.US, "%.4f", duration) // Dauer auf 4 Nachkommastellen runden
+                        timeMap[filename.toString()] = roundedDuration.toDouble() // Zeit in Map speichern
+
+
                         updatesCount++
                         checkAndUpdateSuggestions2()
 
@@ -665,6 +678,15 @@ class GuiManager {
                         println("Ungültiger Pfad: $pathWithNewData, Überspringe Verarbeitung für diese Datei.")
                     }
                 }
+
+                // Am Ende, Drucke die Zeiten Map aus
+                println("Zeitmessungen:")
+                println(timeMap)
+
+                // Berechne den Durchschnitt der Zeiten
+                val totalDuration = timeMap.values.sum()
+                val averageDuration = if (updatesCount > 0) totalDuration / updatesCount else 0.0
+                println("Durchschnittsdauer: " + averageDuration)
             }
 
             val valid = key.reset()
