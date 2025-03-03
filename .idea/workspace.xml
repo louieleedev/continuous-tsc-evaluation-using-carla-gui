@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="gui fertig">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/GuiManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/helper/SuggestionListCellRenderer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/tools/aqua/stars/carla/experiments/gui/helper/SuggestionListCellRenderer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../stars-carla-experiments/src/main/kotlin/tools/aqua/stars/carla/experiments/ExperimentConfiguration.kt" afterDir="false" />
-    </list>
+    <list default="true" id="b3a62b69-35f5-4e6f-8d7a-1e639c336f69" name="Changes" comment="bugFix: Es wurde weiterhin versucht Vorschläge zu generieren, obwohl alle möglichen Vorschläge bereits da waren." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -133,7 +127,11 @@
       <workItem from="1736845614904" duration="806000" />
       <workItem from="1737150202003" duration="1213000" />
       <workItem from="1737899850247" duration="30554000" />
-      <workItem from="1738001053013" duration="9512000" />
+      <workItem from="1738001053013" duration="10676000" />
+      <workItem from="1738220836367" duration="4399000" />
+      <workItem from="1739458328207" duration="8858000" />
+      <workItem from="1739500720637" duration="188000" />
+      <workItem from="1740422646899" duration="990000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <option name="closed" value="true" />
@@ -199,7 +197,23 @@
       <option name="project" value="LOCAL" />
       <updated>1737930707011</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="bugFix">
+      <option name="closed" value="true" />
+      <created>1738012198322</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1738012198322</updated>
+    </task>
+    <task id="LOCAL-00010" summary="bugFix: Es wurde weiterhin versucht Vorschläge zu generieren, obwohl alle möglichen Vorschläge bereits da waren.">
+      <option name="closed" value="true" />
+      <created>1739500858999</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1739500858999</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -225,6 +239,8 @@
     <MESSAGE value="Wetterkombination mit gewähltem TSC Identifier" />
     <MESSAGE value="Wetterkombination mit gewähltem TSC Identifier - aufgeräumt" />
     <MESSAGE value="gui fertig" />
-    <option name="LAST_COMMIT_MESSAGE" value="gui fertig" />
+    <MESSAGE value="bugFix" />
+    <MESSAGE value="bugFix: Es wurde weiterhin versucht Vorschläge zu generieren, obwohl alle möglichen Vorschläge bereits da waren." />
+    <option name="LAST_COMMIT_MESSAGE" value="bugFix: Es wurde weiterhin versucht Vorschläge zu generieren, obwohl alle möglichen Vorschläge bereits da waren." />
   </component>
 </project>

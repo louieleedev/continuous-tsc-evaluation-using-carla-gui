@@ -23,7 +23,10 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.WatchEvent
+import java.util.*
 import javax.swing.*
+import javax.swing.Timer
+import kotlin.collections.ArrayList
 import kotlin.math.floor
 
 
@@ -49,6 +52,8 @@ class GuiManager {
     )
 
     private val tscIdentifiersDropdown = JComboBox<String>(tscIdentifiers)
+
+    private val timeMap = mutableMapOf<String, Double>()
 
     private var selectedLayer: String = "full TSC"
 
@@ -104,11 +109,11 @@ class GuiManager {
         frame.add(tscIdentifiersDropdown, BorderLayout.NORTH)
 
         // Vorschläge
-         val rightPanel = JPanel()
-         rightPanel.layout = GridLayout(2, 1)
-         setupSuggestionsPanel(rightPanel)
-         setupWeatherCombinationPanel(rightPanel)
-         frame.add(rightPanel, BorderLayout.EAST)
+        val rightPanel = JPanel()
+        rightPanel.layout = GridLayout(2, 1)
+        setupSuggestionsPanel(rightPanel)
+        setupWeatherCombinationPanel(rightPanel)
+        frame.add(rightPanel, BorderLayout.EAST)
 
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         frame.setSize(FRAME_WIDTH.toInt(), FRAME_HEIGHT.toInt())
@@ -464,13 +469,18 @@ class GuiManager {
             it.contains("WEATHER") || it.contains("TRAFFICDENSITY") || it.contains("TIMEOFDAY")
         }
 
+        println("filteredUnseenNodes wurde gefiltert: " + filteredUnseenNodes)
+
         if (updatesCount > countCriteria && filteredUnseenNodes.isNotEmpty()) {
             if (unseenNodes.isNotEmpty()) {
                 // buildSuggestion(filteredUnseenNodes)
+                // buildSuggestion2(filteredUnseenNodes)
                 buildSuggestion2(filteredUnseenNodes)
             }
             countCriteria += 5
         }
+
+        println("updatesCount > countCriteria Bedingung wurde geprüft, updateCount: " + updatesCount + ", countCriteria: " +countCriteria)
 
         updateSuggestionList(seenLeafs)
 
@@ -494,12 +504,16 @@ class GuiManager {
 
     private fun buildSuggestion(unseenNodes: List<String>) {
 
-        // println("unseenNodes: " + unseenNodes)
+        println("buildSuggestion wurde gerufen")
         var randomLeaf = unseenNodes.random()
         // addSuggestion(randomLeaf)
 
         while (suggestionsMap.containsKey(randomLeaf)) {
+            println("while Schleife wird gerufen für die Prüfung suggestionsMap.containsKey(randomLeaf)")
             randomLeaf = unseenNodes.random()
+            println("suggestionsMap: " + suggestionsMap)
+            println("randomLeaf: " + randomLeaf)
+            sleep(100)
         }
         addSuggestion(randomLeaf)
 
@@ -657,7 +671,10 @@ class GuiManager {
     }
 
     private fun updateSuggestionList(seenLeafs: Set<String>) {
+        println("updateSuggestionList wurde geruden")
         if (suggestionsMap.isNotEmpty()) {
+            println("SuggestionMap ist nicht leer. SuggestionMap: " + suggestionsMap)
+
             println("Aktuelle Vorschläge: ")
             print(suggestionsMap)
             println("")
@@ -775,6 +792,7 @@ class GuiManager {
         while (attempt < maxAttempts) {
             if (jsonFile.exists()) {
                 println("Datei gefunden: ${jsonFile.path}")
+                Thread.sleep(100)
                 return finalResult
             } else {
                 println("Warte auf die Datei: ${jsonFile.path}")
@@ -806,12 +824,20 @@ class GuiManager {
                     val filename = ev.context()
 
                     println("Neue Datei erstellt: ${filename.toString()}")
+                    val startTime = System.nanoTime()
                     val pathWithNewData = buildPath2(filename.toString(), "valid-tsc-instances-per-tsc","full TSC")
 
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
                     if (pathWithNewData != "ERROR") {
                         readResultFromJson(pathWithNewData)
                         updateColor()
+
+                        val endTime = System.nanoTime() // Endzeit messen
+                        val duration = (endTime - startTime) / 1_000_000.0 // Dauer in Millisekunden berechnen
+                        val roundedDuration = String.format(Locale.US, "%.4f", duration) // Dauer auf 4 Nachkommastellen runden
+                        timeMap[filename.toString()] = roundedDuration.toDouble() // Zeit in Map speichern
+
+
                         updatesCount++
                         // checkAndUpdateSuggestions2()
                         checkAndUpdateSuggestions3()
@@ -832,6 +858,15 @@ class GuiManager {
                         println("Ungültiger Pfad: $pathWithNewData, Überspringe Verarbeitung für diese Datei.")
                     }
                 }
+
+                // Am Ende, Drucke die Zeiten Map aus
+                println("Zeitmessungen:")
+                println(timeMap)
+
+                // Berechne den Durchschnitt der Zeiten
+                val totalDuration = timeMap.values.sum()
+                val averageDuration = if (updatesCount > 0) totalDuration / updatesCount else 0.0
+                println("Durchschnittsdauer: " + averageDuration)
             }
 
             val valid = key.reset()
