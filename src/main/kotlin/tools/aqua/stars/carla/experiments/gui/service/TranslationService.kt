@@ -13,6 +13,50 @@ object TranslationService {
         return "$roadTypeTranslation -> $categoryTranslation -> $actionTranslation"
     }
 
+    fun translateSuggestionLog2(suggestions: List<String>): String {
+        if (suggestions.isEmpty()) return "Keine Vorschläge vorhanden."
+
+        val groupedByRoadType = mutableMapOf<String, MutableList<String>>()
+
+        suggestions.forEach { suggestion ->
+            val parts = suggestion.split('.')
+            if (parts.size < 5) return "Ungültiges Format für Vorschlag: $suggestion"
+
+            val roadType = parts[2]
+            val action = parts[4] // Annahme: Das ist der relevante Teil für die Aktion
+
+            // Füge die übersetzte Aktion dem entsprechenden Straßentyp hinzu
+            groupedByRoadType.getOrPut(roadType) { mutableListOf() }.add(translateActionLog(action))
+        }
+
+        // Baue den finalen String auf
+        return groupedByRoadType.entries.joinToString(separator = "\n") { entry ->
+            "${entry.key}:\n  -> ${entry.value.joinToString(separator = "\n  -> ")}"
+        }
+    }
+
+    fun translateSuggestionLog3(suggestions: List<String>): String {
+        if (suggestions.isEmpty()) return "<html>Keine Vorschläge vorhanden.</html>"
+
+        val groupedByRoadType = mutableMapOf<String, MutableList<String>>()
+
+        suggestions.forEach { suggestion ->
+            val parts = suggestion.split('.')
+            if (parts.size < 5) return "<html>Ungültiges Format für Vorschlag: $suggestion</html>"
+
+            val roadType = parts[2]
+            val action = parts[4]  // Annahme: Das ist der relevante Teil für die Aktion
+
+            // Füge die übersetzte Aktion dem entsprechenden Straßentyp hinzu
+            groupedByRoadType.getOrPut(roadType) { mutableListOf() }.add(translateActionLog(action))
+        }
+
+        // Baue den finalen HTML String auf
+        return groupedByRoadType.entries.joinToString(separator = "<br>") { entry ->
+            "<html>${entry.key}:<br>&nbsp;&nbsp;-> ${entry.value.joinToString(separator = "<br>&nbsp;&nbsp;-> ")}<br>&nbsp;</html>"
+        }
+    }
+
     fun translateActionLog(action: String): String {
         return when (action) {
             "FOLLOWINGLEADINGVEHICLE" -> "FOLLOWING LEADING VEHICLE"
@@ -49,21 +93,52 @@ object TranslationService {
         return "Auf der $roadType wurde das $category '$actionTranslation' noch nicht gesehen."
     }
 
+    fun translateSuggestionMessage2(suggestion : Map.Entry<String, List<String>>): String {
+        if (suggestion.value.isEmpty()) return "<html>Keine Vorschläge vorhanden.</html>"
+
+        val stringBuilder = StringBuilder("<html>Auf der ")
+
+        // Der Straßentyp wird basierend auf dem ersten Eintrag bestimmt
+        val firstPath = suggestion.value.first().split('.')
+        val roadType = when (firstPath[2]) {
+            "SINGLE-LANE" -> "einzelspurigen Straße"
+            "JUNCTION" -> "Kreuzung"
+            "MULTI-LANE" -> "mehrspurigen Straße"
+            else -> "Straße"
+        }
+        stringBuilder.append("$roadType wurde folgende Kombinationen <br>")
+
+        // Verarbeiten jeder Aktion in der Liste
+        suggestion.value.forEach { path ->
+            val parts = path.split('.')
+            if (parts.size < 5) return "<html>Ungültiges Format für Vorschlag: $path</html>"
+
+            val category = when (parts[3]) {
+                "DYNAMICRELATION" -> "dynamische Beziehung"
+                "MANEUVER" -> "Manöver"
+                "STOPTYPE" -> "Stopp-Typ"
+                else -> ""
+            }
+            val actionTranslation = translateAction(parts.last())
+
+            stringBuilder.append("das $category '$actionTranslation' mit<br>")
+        }
+
+        // Entferne das letzte "<br>" und füge den abschließenden Text hinzu
+        if (stringBuilder.endsWith("mit<br>")) {
+            stringBuilder.setLength(stringBuilder.length - 7)  // Entfernt das letzte "mit<br>"
+        }
+        stringBuilder.append("<br>noch nicht gesehen.</html>")
+
+        return stringBuilder.toString()
+    }
+
     fun translateAction(action: String): String {
+        // Beispiel für eine Übersetzungsfunktion
         return when (action) {
-            "FOLLOWINGLEADINGVEHICLE" -> "Folgen eines vorausfahrenden Fahrzeugs"
-            "PEDESTRIANCROSSED" -> "Überqueren von Fußgängern"
-            "MUSTYIELD" -> "Vorfahrt gewähren"
-            "ONCOMINGTRAFFIC" -> "Entgegenkommender Verkehr"
-            "OVERTAKING" -> "Überholen"
-            "LANEFOLLOW" -> "Spurfolgen"
-            "LANECHANGE" -> "Spurwechsel"
-            "RIGHTTURN" -> "Rechtsabbiegen"
-            "LEFTTURN" -> "Linksabbiegen"
-            "HASREDLIGHT" -> "Ampel mit rotem Licht"
-            "HASSTOPSIGN" -> "Stoppschild"
-            "HASYIELDSIGN" -> "Vorfahrtsschild"
-            else -> action.lowercase().replace('_', ' ').capitalize()
+            "LEFTTURN" -> "Links abbiegen"
+            "FOLLOWVEHICLE" -> "Fahrzeug folgen"
+            else -> action
         }
     }
 

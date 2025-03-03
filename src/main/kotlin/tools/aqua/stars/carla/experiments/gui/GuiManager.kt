@@ -5,7 +5,10 @@ import com.mxgraph.view.mxGraph
 import tools.aqua.stars.carla.experiments.gui.helper.SuggestionListCellRenderer
 import tools.aqua.stars.carla.experiments.gui.service.WeatherCombinationService
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionLog
+import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionLog2
+import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionLog3
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionMessage
+import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionMessage2
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateSuggestionToKey
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateWeatherToKey
 import tools.aqua.stars.carla.experiments.gui.service.TranslationService.translateWeatherkeyToDisplay
@@ -30,7 +33,7 @@ class GuiManager {
     private val graphManager = GraphManager(graph)
     private val root = graphManager.getRoot()
     private var graphComponent: mxGraphComponent? = null
-    private val frame = JFrame("Baumdarstellung mit JGraphX")
+    private val frame = JFrame("TSC Visualiser")
 
     private val defaultTSC = tsc()
     private val tscList = defaultTSC.buildProjections()
@@ -58,7 +61,11 @@ class GuiManager {
     private var updatesCount = 0
     private var countCriteria = 2
 
+    private val scenarioMap = ScenarioMap()
+    private val allScenarios = scenarioMap.allScenarios
+    private var unseenScenarios = allScenarios
     private val suggestionsMap = mutableMapOf<String, String>() // Speichert Vorschläge
+    private val suggestionsMap2 = mutableMapOf<String, List<String>>() // Speichert Vorschläge
     private val suggestionsListModel = DefaultListModel<String>() // Model für JList
     private val suggestionsList = JList(suggestionsListModel) // JList, die die Vorschläge anzeigt
 
@@ -97,11 +104,11 @@ class GuiManager {
         frame.add(tscIdentifiersDropdown, BorderLayout.NORTH)
 
         // Vorschläge
-        val rightPanel = JPanel()
-        rightPanel.layout = GridLayout(2, 1)
-        setupSuggestionsPanel(rightPanel)
-        setupWeatherCombinationPanel(rightPanel)
-        frame.add(rightPanel, BorderLayout.EAST)
+         val rightPanel = JPanel()
+         rightPanel.layout = GridLayout(2, 1)
+         setupSuggestionsPanel(rightPanel)
+         setupWeatherCombinationPanel(rightPanel)
+         frame.add(rightPanel, BorderLayout.EAST)
 
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         frame.setSize(FRAME_WIDTH.toInt(), FRAME_HEIGHT.toInt())
@@ -113,7 +120,7 @@ class GuiManager {
         val suggestionsPanel = JPanel(BorderLayout())
         suggestionsPanel.border = BorderFactory.createTitledBorder("Vorschläge")
 
-        val fixedWidth = 300
+        val fixedWidth = 400
         val fixedPanelDimension = Dimension(fixedWidth, frame.height)
 
         suggestionsPanel.preferredSize = fixedPanelDimension
@@ -133,7 +140,7 @@ class GuiManager {
     private fun setupWeatherCombinationPanel(parent: JPanel) {
         val weatherCombinationPanel = JPanel(BorderLayout())
 
-        val fixedWidth = 300
+        val fixedWidth = 400
         val fixedPanelDimension = Dimension(fixedWidth, frame.height)
 
         weatherCombinationPanel.preferredSize = fixedPanelDimension
@@ -256,7 +263,7 @@ class GuiManager {
             val id1 = convertToID("ROOT", edge1.destination.label)
             // println("\tID1: ${id1}")
             if(edge1.destination.label != "Road Type") {
-                val nodeT1 = graphManager.insertVertex(id1, edge1.destination.label, 250.0, y*i1+(y/2), 80.0, 30.0)
+                val nodeT1 = graphManager.insertVertex(id1, edge1.destination.label, 250.0, y*i1+(y/2), 90.0, 30.0)
                 graphManager.insertEdge(null, "", root, nodeT1)
 
                 for((i2, edge2) in edge1.destination.edges.withIndex()) {
@@ -285,14 +292,14 @@ class GuiManager {
                         val pos3 = calculatePosition( pos2-170, 340.0, 90.0, edge2.destination.edges.size, i3)
                         val id3 = convertToID(id2, edge3.destination.label)
                         // println("\tID3: ${id3}")
-                        val nodeT3 = graphManager.insertVertex(id3, edge3.destination.label, 1000.0, pos3, 90.0, 30.0)
+                        val nodeT3 = graphManager.insertVertex(id3, edge3.destination.label, 1000.0, pos3, 100.0, 30.0)
                         graphManager.insertEdge(null, "", nodeT2, nodeT3)
 
                         for((i4, edge4) in edge3.destination.edges.withIndex()) {
                             val pos4 = calculatePosition( pos3-75, 150.0, 5.0, edge3.destination.edges.size, i4)
                             val id4 = convertToID(id3, edge4.destination.label)
                             // println("\tID4: ${id4}")
-                            val nodeT4 = graphManager.insertVertex(id4, edge4.destination.label, 1300.0, pos4, 140.0, 30.0)
+                            val nodeT4 = graphManager.insertVertex(id4, edge4.destination.label, 1300.0, pos4, 150.0, 30.0)
                             graphManager.insertEdge(null, "", nodeT3, nodeT4)
 
                             // Blätter aktualisieren
@@ -316,6 +323,8 @@ class GuiManager {
         val jsonFile = File(pathWithNewData)
         val result = getJsonContentOfFile(jsonFile)
 
+        val scenarioLeafs : MutableList<String> = mutableListOf()
+
         // Update Frequency if a vertex is detected
         if (result.value is ArrayList<*>) {
             for ((i, instanz) in (result.value as ArrayList<*>).withIndex()) {
@@ -337,12 +346,25 @@ class GuiManager {
                                 for ((i4, edge4) in edge3.destination.outgoingEdges.withIndex()) {
                                     val id4 = convertToID(id3, edge4.destination.label)
                                     graphManager.incrementFrequency(id4)
+                                    scenarioLeafs.add(id4)
                                 }
                             }
                         }
                     }
                 }
             }
+        }
+        if(unseenScenarios.isNotEmpty()) {
+            // println("Anzahl der nicht gesehenen Szenarien ist: " + unseenScenarios.size)
+            val iterator = unseenScenarios.entries.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                if (entry.value.sorted() == scenarioLeafs.sorted()) {
+                    println("Entferne: ${entry.key} mit den Werten ${entry.value.joinToString(", ")}")
+                    iterator.remove() // Entfernt den Eintrag sicher während der Iteration
+                }
+            }
+            // println("Anzahl der nicht gesehenen Szenarien nach der Entfernung ist: " + unseenScenarios.size)
         }
     }
 
@@ -410,6 +432,12 @@ class GuiManager {
         println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
     }
 
+    private fun calcutatle (){
+        val arr = ArrayList<Int>()
+        arr.add(1); arr.add(2); arr.add(3); arr.add(4); arr.add(5); arr.add(6)
+        arr.sum()
+    }
+
     private fun checkAndUpdateSuggestions2() {
 
         val unseenNodes = mutableListOf<String>()
@@ -438,12 +466,27 @@ class GuiManager {
 
         if (updatesCount > countCriteria && filteredUnseenNodes.isNotEmpty()) {
             if (unseenNodes.isNotEmpty()) {
-                buildSuggestion(filteredUnseenNodes)
+                // buildSuggestion(filteredUnseenNodes)
+                buildSuggestion2(filteredUnseenNodes)
             }
-            countCriteria = countCriteria + 1
+            countCriteria += 5
         }
 
         updateSuggestionList(seenLeafs)
+
+        val i = countCriteria - updatesCount
+        println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
+    }
+
+    private fun checkAndUpdateSuggestions3() {
+
+        if (updatesCount > countCriteria && unseenScenarios.isNotEmpty()) {
+            // buildSuggestion2(filteredUnseenNodes)
+            buildSuggestion3(unseenScenarios)
+            countCriteria += 5
+        }
+
+        updateSuggestionList2()
 
         val i = countCriteria - updatesCount
         println("In $i. ten Untersuchung wird ein Vorschlag wieder generiert.")
@@ -499,10 +542,118 @@ class GuiManager {
         }
     }
 
+    private fun buildSuggestion2(unseenNodes: List<String>) {
+
+        // Filtere unseenNodes, um nur die Nodes zu behalten, die nicht in suggestionsMap sind
+        val validUnseenNodes = unseenNodes.filter { !suggestionsMap.containsKey(it) }
+        println("validUnseenNodes: " + validUnseenNodes)
+
+        // Überprüfe, ob es gültige unseen Nodes gibt
+        if (validUnseenNodes.isNotEmpty()) {
+            var randomLeaf = validUnseenNodes.random()
+            addSuggestion(randomLeaf)
+
+            SwingUtilities.invokeLater {
+                try {
+                    val dialog = JDialog(frame, "Vorschlag", true)
+                    dialog.layout = BorderLayout()
+
+                    val label = JLabel(translateSuggestionMessage(randomLeaf))
+                    label.horizontalAlignment = JLabel.CENTER
+                    label.verticalAlignment = JLabel.CENTER
+                    val labelFont = label.font
+                    label.font = Font(labelFont.name, labelFont.style, 20)
+
+                    val panel = JPanel(GridBagLayout())
+                    val gbc = GridBagConstraints()
+                    gbc.gridx = 0
+                    gbc.gridy = 0
+                    gbc.weightx = 1.0
+                    gbc.weighty = 1.0
+                    gbc.fill = GridBagConstraints.BOTH
+                    panel.add(label, gbc)
+
+                    dialog.add(panel, BorderLayout.CENTER)
+                    dialog.setSize(1200, 300)
+                    dialog.setLocationRelativeTo(frame)
+
+                    val timer = Timer(5000) { e -> dialog.dispose() }
+                    timer.isRepeats = false
+                    timer.start()
+
+                    dialog.isVisible = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            println("Keine gültigen unseen Nodes verfügbar. Vorschlag kann nicht gemacht werden.")
+        }
+    }
+
+    private fun buildSuggestion3(unseenScenarios: MutableMap<String, List<String>>) {
+
+        // Filtere unseenScenarios, um nur die Szenarien zu behalten, deren Listen nicht in suggestionsMap2 vorkommen
+        val unseenScenarioToSuggest = unseenScenarios.filter { entry ->
+            // Prüfe, ob kein Wert in suggestionsMap2 mit dem Wert von entry übereinstimmt
+            !suggestionsMap2.any { (_, value) -> value.sorted() == entry.value.sorted() }
+        }
+
+        // Überprüfe, ob es gültige unseen Nodes gibt
+        if (unseenScenarioToSuggest.isNotEmpty()) {
+            // val randomScenario = unseenScenarios.random()
+            val randomScenario = unseenScenarioToSuggest.entries.random()
+            addSuggestion2(randomScenario.key, randomScenario.value)
+
+            SwingUtilities.invokeLater {
+                try {
+                    val dialog = JDialog(frame, "Vorschlag", true)
+                    dialog.layout = BorderLayout()
+
+                    // val label = JLabel(translateSuggestionMessage(randomLeaf))
+                    val label = JLabel(translateSuggestionMessage2(randomScenario))
+                    label.horizontalAlignment = JLabel.CENTER
+                    label.verticalAlignment = JLabel.CENTER
+                    val labelFont = label.font
+                    label.font = Font(labelFont.name, labelFont.style, 20)
+
+                    val panel = JPanel(GridBagLayout())
+                    val gbc = GridBagConstraints()
+                    gbc.gridx = 0
+                    gbc.gridy = 0
+                    gbc.weightx = 1.0
+                    gbc.weighty = 1.0
+                    gbc.fill = GridBagConstraints.BOTH
+                    panel.add(label, gbc)
+
+                    dialog.add(panel, BorderLayout.CENTER)
+                    dialog.setSize(1200, 300)
+                    dialog.setLocationRelativeTo(frame)
+
+                    val timer = Timer(5000) { e -> dialog.dispose() }
+                    timer.isRepeats = false
+                    timer.start()
+
+                    dialog.isVisible = true
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } else {
+            println("Keine gültigen unseen Nodes verfügbar. Vorschlag kann nicht gemacht werden.")
+        }
+    }
+
     private fun addSuggestion(suggestion: String) {
         // Füge den Vorschlag zum Map und zur JList hinzu
         suggestionsMap[suggestion] = translateSuggestionLog(suggestion)        // Speichert den Vorschlag
         suggestionsListModel.addElement(translateSuggestionLog(suggestion))    // Fügt den Vorschlag zur GUI hinzu
+    }
+
+    private fun addSuggestion2(key: String, value: List<String>) {
+        // Füge den Vorschlag zum Map und zur JList hinzu
+        suggestionsMap2[key] = value        // Speichert den Vorschlag
+        suggestionsListModel.addElement(translateSuggestionLog3(value))    // Fügt den Vorschlag zur GUI hinzu
     }
 
     private fun updateSuggestionList(seenLeafs: Set<String>) {
@@ -535,6 +686,32 @@ class GuiManager {
                 val item = suggestionsListModel.getElementAt(i)
                 println("Suggestion Value: " + item) // Druckt jedes Element in der Liste
                 println("Suggestion Key: " + translateSuggestionToKey(item))
+            }
+            suggestionsList.cellRenderer = SuggestionListCellRenderer(allLeafs)
+            suggestionsList.repaint()
+        }
+    }
+
+    private fun updateSuggestionList2() {
+        println("Size der suggestionsMap2: " + suggestionsMap2.size)
+        println("Suggestion Map 2: ")
+        println(suggestionsMap2)
+        if (suggestionsMap2.isNotEmpty()) {
+            println("Aktuelle Vorschläge: ")
+            print(suggestionsMap2)
+            println("")
+
+            val unseenValues = unseenScenarios.values.toSet()  // Erstelle eine Set von allen List<String> in unseenScenarios für schnellen Zugriff und Vergleich
+
+            val iterator = suggestionsMap2.iterator()
+            while (iterator.hasNext()) {
+                val entry = iterator.next()
+                // Prüfe, ob der Wert der Entry in den Werten von unseenScenarios enthalten ist
+                if (!unseenValues.any { it.sorted() == entry.value.sorted() }) {
+                    println("Der Vorschlag ${entry.value} ist nicht mehr aktuell und wird entfernt.")
+                    iterator.remove()  // Sicher entfernen mit dem Iterator
+                    suggestionsListModel.removeElement(translateSuggestionLog3(entry.value))  // Auch aus der GUI-Liste entfernen
+                }
             }
             suggestionsList.cellRenderer = SuggestionListCellRenderer(allLeafs)
             suggestionsList.repaint()
@@ -579,7 +756,8 @@ class GuiManager {
     }
 
     private fun buildPath2(newFolder: String, metric: String, tscIdentifier: String): String {
-        val resultPath = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"
+        // val resultPath = "C:\\Lee\\TU-Dortmund\\Bachelorarbeit\\Code\\stars-carla-experiments\\serialized-results\\results"
+        val resultPath = "/Users/keonhyeong.lee/Documents/K. Lee/TU Dortmund/Bachelor Arbeit/analysed result"
         val resultsDir = File(resultPath)
 
         if (!resultsDir.exists() || !resultsDir.isDirectory) {
@@ -633,10 +811,10 @@ class GuiManager {
                     // Überprüfen, ob der Pfad gültig ist, bevor weitere Schritte unternommen werden
                     if (pathWithNewData != "ERROR") {
                         readResultFromJson(pathWithNewData)
-                        // updateColor()
                         updateColor()
                         updatesCount++
-                        checkAndUpdateSuggestions2()
+                        // checkAndUpdateSuggestions2()
+                        checkAndUpdateSuggestions3()
 
                          // MissedPredicateCombinations für Kombination Wetter und Straßentypen
 //                         val pathForMissedPredicateCombinations = buildPath(filename.toString(), "missed-predicate-combinations", "full TSC")
