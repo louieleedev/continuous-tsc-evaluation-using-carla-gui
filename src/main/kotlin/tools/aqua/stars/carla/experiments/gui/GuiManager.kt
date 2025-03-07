@@ -23,6 +23,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.WatchEvent
+import java.time.Duration
+import java.time.Instant
 import java.util.*
 import javax.swing.*
 import javax.swing.Timer
@@ -71,6 +73,8 @@ class GuiManager {
     private var unseenScenarios = allScenarios
     private val suggestionsMap = mutableMapOf<String, String>() // Speichert Vorschläge
     private val suggestionsMap2 = mutableMapOf<String, List<String>>() // Speichert Vorschläge
+    private val suggestionTimestamps = mutableMapOf<String, Pair<List<String>, Instant>>()
+    private val suggestionSegmentCounter = mutableMapOf<String, Pair<List<String>, Int>>()
     private val suggestionsListModel = DefaultListModel<String>() // Model für JList
     private val suggestionsList = JList(suggestionsListModel) // JList, die die Vorschläge anzeigt
 
@@ -493,7 +497,7 @@ class GuiManager {
         if (updatesCount > countCriteria && unseenScenarios.isNotEmpty()) {
             // buildSuggestion2(filteredUnseenNodes)
             buildSuggestion3(unseenScenarios)
-            countCriteria += 5
+            countCriteria += 2
         }
 
         updateSuggestionList2()
@@ -610,7 +614,7 @@ class GuiManager {
         // Filtere unseenScenarios, um nur die Szenarien zu behalten, deren Listen nicht in suggestionsMap2 vorkommen
         val unseenScenarioToSuggest = unseenScenarios.filter { entry ->
             // Prüfe, ob kein Wert in suggestionsMap2 mit dem Wert von entry übereinstimmt
-            !suggestionsMap2.any { (_, value) -> value.sorted() == entry.value.sorted() }
+            entry.value.size == 1 && !suggestionsMap2.any { (_, value) -> value.sorted() == entry.value.sorted() }
         }
 
         // Überprüfe, ob es gültige unseen Nodes gibt
@@ -665,8 +669,9 @@ class GuiManager {
     }
 
     private fun addSuggestion2(key: String, value: List<String>) {
-        // Füge den Vorschlag zum Map und zur JList hinzu
         suggestionsMap2[key] = value        // Speichert den Vorschlag
+        suggestionTimestamps[key] = Pair(value, Instant.now())
+        suggestionSegmentCounter[key] = Pair(value, updatesCount)
         suggestionsListModel.addElement(translateSuggestionLog3(value))    // Fügt den Vorschlag zur GUI hinzu
     }
 
@@ -718,19 +723,34 @@ class GuiManager {
             print(suggestionsMap2)
             println("")
 
-            val unseenValues = unseenScenarios.values.toSet()  // Erstelle eine Set von allen List<String> in unseenScenarios für schnellen Zugriff und Vergleich
+            val unseenScenarioSet = unseenScenarios.values.toSet()  // Erstelle eine Set von allen List<String> in unseenScenarios für schnellen Zugriff und Vergleich
 
             val iterator = suggestionsMap2.iterator()
             while (iterator.hasNext()) {
                 val entry = iterator.next()
-                // Prüfe, ob der Wert der Entry in den Werten von unseenScenarios enthalten ist
-                if (!unseenValues.any { it.sorted() == entry.value.sorted() }) {
-                    println("Der Vorschlag ${entry.value} ist nicht mehr aktuell und wird entfernt.")
-                    iterator.remove()  // Sicher entfernen mit dem Iterator
-                    suggestionsListModel.removeElement(translateSuggestionLog3(entry.value))  // Auch aus der GUI-Liste entfernen
+                val key = entry.key
+                val value = entry.value
+
+                if (!unseenScenarioSet.any { it.sorted() == entry.value.sorted() }) {
+
+                    if (suggestionTimestamps.containsKey(key)) {
+                        val (storedValue, timestamp) = suggestionTimestamps[key]!!
+                        val currentTime = Instant.now()
+                        val duration = Duration.between(timestamp, currentTime).toSeconds()
+                        println("Der Vorschlag ${storedValue} ist nicht mehr aktuell und wird entfernt nach $duration Sekunden.")
+                    }
+                    if (suggestionSegmentCounter.containsKey(key)) {
+                        val (storedValue, countPrev) = suggestionSegmentCounter[key]!!
+                        val segmentCount = updatesCount - countPrev
+                        println("Inzwischen passierten Segmentanalysen: " + segmentCount)
+                    }
+                    println("Der Vorschlag ${value} ist nicht mehr aktuell und wird entfernt.")
+                    iterator.remove()
+                    suggestionsListModel.removeElement(translateSuggestionLog3(value))  // Auch aus der GUI-Liste entfernen
+                    suggestionTimestamps.remove(key)
                 }
             }
-            suggestionsList.cellRenderer = SuggestionListCellRenderer(allLeafs)
+            // suggestionsList.cellRenderer = SuggestionListCellRenderer(allLeafs)
             suggestionsList.repaint()
         }
     }
